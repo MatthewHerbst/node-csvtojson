@@ -4,7 +4,6 @@ import path from "path";
 
 import { Converter } from "./Converter";
 import {Result} from "./Result";
-import { JSONResult } from "./lineToJson";
 
 const dataDir = path.join(__dirname,"../test/data/");
 
@@ -18,5 +17,5 @@ describe("Result", () => {
       conv.parseParam.needEmitAll = false;
       assert.equal(res["needEmitAll"], false);
   });
-})
+});
 

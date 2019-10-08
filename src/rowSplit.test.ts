@@ -1,6 +1,7 @@
-import { RowSplit, MultipleRowResult, RowSplitResult } from "./rowSplit";
+import assert from "assert";
+
 import { Converter } from "./Converter";
-const assert = require("assert");
+import { RowSplit, MultipleRowResult, RowSplitResult } from "./rowSplit";
 
 describe("Test delimiters", function () {
   const getDelimiter = (str, opt: { delimiter: string | string[] }): string => {
@@ -106,6 +107,7 @@ describe("RowSplit.parse function", function () {
     assert.equal(res.closed, true);
     assert.equal(res.cells[2], 'csvtojson,a"\nwesome');
   });
+
   it("should allow blank quotes", () => {
     const data = "a|^^|^b^";
 
@@ -116,7 +118,8 @@ describe("RowSplit.parse function", function () {
     }));
     const res = rowSplit.parse(data);
     assert.equal(res.cells[1], "");
-  })
+  });
+
   it("should allow blank quotes in quotes", () => {
     const data = 'a,"hello,this,"", test"';
 
@@ -125,7 +128,8 @@ describe("RowSplit.parse function", function () {
     }));
     const res = rowSplit.parse(data);
     assert.equal(res.cells[1], 'hello,this,", test');
-  })
+  });
+
   it("should smart detect if an initial quote is only part of value ", () => {
     const data = '"Weight" (kg),Error code,"Height" (m)';
     const rowSplit = new RowSplit(new Converter({
@@ -137,6 +141,5 @@ describe("RowSplit.parse function", function () {
     assert.equal(res.cells[0],'"Weight" (kg)');
     assert.equal(res.cells[1],'Error code');
     assert.equal(res.cells[2],'"Height" (m)');
-    
-  })
+  });
 });

@@ -8,7 +8,9 @@ import { ProcessorLocal } from "./ProcessorLocal";
 import { Result } from "./Result";
 
 export class Converter extends Transform implements Promise<any> {
-  [Symbol.toStringTag]: any;
+  get [Symbol.toStringTag]() {
+    return 'Converter';
+  }
   preRawData(onRawData: PreRawDataCallback): Converter {
     this.runtime.preRawDataHook = onRawData;
     return this;

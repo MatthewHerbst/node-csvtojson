@@ -1,6 +1,10 @@
-import CSVError from "./CSVError";
 import assert from "assert";
-describe("CSVError",()=>{
-  it ("should toString()",()=>{
-  })
-})
+
+import { Converter } from './Converter';
+
+describe("CSVError", () => {
+  it ("should toString()", () => {
+    const conv = new Converter();
+    assert.equal(conv.toString(), '[object Converter]');
+  });
+});

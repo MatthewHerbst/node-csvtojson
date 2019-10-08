@@ -1,10 +1,11 @@
-import {stringToLines} from "./fileline";
-import { mergeParams } from "./Parameters";
+import assert from "assert";
+
 import { Converter } from "./Converter";
-var assert = require("assert");
+import {stringToLines} from "./fileline";
+
 describe("fileline function", function() {
   it ("should convert data to multiple lines ", function() {
-    const conv=new Converter();
+    const conv = new Converter();
     var data = "abcde\nefef";
     var result = stringToLines(data, conv.parseRuntime);
     assert.equal(result.lines.length, 1);

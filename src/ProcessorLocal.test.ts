@@ -2,9 +2,9 @@ import assert from "assert";
 import {readFileSync} from "fs";
 import path from "path";
 
-import {ProcessorLocal} from "./ProcessorLocal";
 import { Converter } from "./Converter";
 import { JSONResult } from "./lineToJson";
+import {ProcessorLocal} from "./ProcessorLocal";
 
 const dataDir = path.join(__dirname,"../test/data/");
 

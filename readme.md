@@ -1,30 +1,30 @@
 [![Build Status](https://travis-ci.org/Keyang/node-csvtojson.svg?branch=master)](https://travis-ci.org/Keyang/node-csvtojson)
 [![Coverage Status](https://coveralls.io/repos/github/Keyang/node-csvtojson/badge.svg?branch=master)](https://coveralls.io/github/Keyang/node-csvtojson?branch=master)
-[![OpenCollective](https://opencollective.com/csvtojson/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/csvtojson/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/csvtojson/sponsors/badge.svg)](#sponsors)
 
 # CSVTOJSON
 
 `csvtojson` module is a comprehensive nodejs csv parser to convert csv to json or column arrays. It can be used as node.js library / command line tool / or in browser. Below are some features:
 
-*  Strictly follow CSV definition [RF4180](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml)
-*  Work with millions of lines of CSV data
-*  Provide comprehensive parsing parameters
-*  Provide out of box CSV parsing tool for Command Line
-*  Blazing fast -- [Focus on performance](https://github.com/Keyang/csvbench)
-*  Give flexibility to developer with 'pre-defined' helpers
-*  Allow async / streaming parsing
-*  Provide a csv parser for both Node.JS and browsers
-*  Easy to use API
+* Strictly follow CSV definition [RF4180](https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml)
+* Work with millions of lines of CSV data
+* Provide comprehensive parsing parameters
+* Provide out of box CSV parsing tool for Command Line
+* Blazing fast -- [Focus on performance](https://github.com/Keyang/csvbench)
+* Give flexibility to developer with 'pre-defined' helpers
+* Allow async / streaming parsing
+* Provide a csv parser for both Node.JS and browsers
+* Easy to use API
 
-
-# csvtojson online 
+# csvtojson online
 
 [Here](http://keyangxiang.com/csvtojson/) is a free online csv to json convert service utilizing latest `csvtojson` module.
 
 # Upgrade to V2
 
-`csvtojson` has released version `2.0.0`. 
+`csvtojson` has released version `2.0.0`.
+
 * To upgrade to v2, please follow [upgrading guide](https://github.com/Keyang/node-csvtojson/blob/master/docs/csvtojson-v2.md)
 * If you are looking for documentation for `v1`, open [this page](https://github.com/Keyang/node-csvtojson/blob/master/docs/readme.v1.md)
 
@@ -32,10 +32,10 @@ It is still able to use v1 with `csvtojson@2.0.0`
 
 ```js
 // v1
-const csvtojsonV1=require("csvtojson/v1");
+const csvtojsonV1 = require("csvtojson/v1");
 // v2
-const csvtojsonV2=require("csvtojson");
-const csvtojsonV2=require("csvtojson/v2");
+const csvtojsonV2 = require("csvtojson");
+const csvtojsonV2 = require("csvtojson/v2");
 
 ```
 
@@ -55,7 +55,7 @@ const csvtojsonV2=require("csvtojson/v2");
 
 ### Installation
 
-```
+```sh
 npm i --save csvtojson
 ```
 
@@ -67,23 +67,23 @@ a,b,c
 1,2,3
 4,5,6
 */
-const csvFilePath='<path to csv file>'
-const csv=require('csvtojson')
+const csvFilePath = '<path to csv file>';
+const csv = require('csvtojson');
+
 csv()
-.fromFile(csvFilePath)
-.then((jsonObj)=>{
-	console.log(jsonObj);
-	/**
-	 * [
-	 * 	{a:"1", b:"2", c:"3"},
-	 * 	{a:"4", b:"5". c:"6"}
-	 * ]
-	 */ 
-})
+  .fromFile(csvFilePath)
+  .then((jsonObj) => {
+    console.log(jsonObj);
+    /**
+     * [
+     *   {a:"1", b:"2", c:"3"},
+     *   {a:"4", b:"5". c:"6"}
+     * ]
+     */
+  });
 
 // Async / await usage
-const jsonArray=await csv().fromFile(csvFilePath);
-
+const jsonArray = await csv().fromFile(csvFilePath);
 ```
 
 ### From CSV String to CSV Row
@@ -95,33 +95,32 @@ csvStr:
 4,5,6
 7,8,9
 */
-const csv=require('csvtojson')
-csv({
-	noheader:true,
-	output: "csv"
-})
-.fromString(csvStr)
-.then((csvRow)=>{ 
-	console.log(csvRow) // => [["1","2","3"], ["4","5","6"], ["7","8","9"]]
-})
+const csv = require('csvtojson');
 
+csv({ noheader: true, output: "csv" })
+  .fromString(csvStr)
+  .then((csvRow)=>{
+    console.log(csvRow) // => [["1","2","3"], ["4","5","6"], ["7","8","9"]]
+  });
 ```
-
 
 ### Asynchronously process each line from csv url
 
 ```js
-const request=require('request')
-const csv=require('csvtojson')
+const request = require('request')
+const csv = require('csvtojson')
 
 csv()
-.fromStream(request.get('http://mywebsite.com/mycsvfile.csv'))
-.subscribe((json)=>{
-	return new Promise((resolve,reject)=>{
-		// long operation for each json e.g. transform / write into database.
-	})
-},onError,onComplete);
-
+  .fromStream(request.get('http://mywebsite.com/mycsvfile.csv'))
+  .subscribe(
+    (json) => {
+      return new Promise((resolve,reject) => {
+        // Long operation for each json e.g. transform / write into database.
+      });
+    },
+    onError,
+    onComplete
+  );
 ```
 
 ### Convert to CSV lines
@@ -134,62 +133,59 @@ a,b,c
 4,5,6
 */
 
-const csv=require('csvtojson')
-csv({output:"line"})
-.fromString(csvStr)
-.subscribe((csvLine)=>{ 
-	// csvLine =>  "1,2,3" and "4,5,6"
-})
+const csv = require('csvtojson');
+csv({ output:"line" })
+  .fromString(csvStr)
+  .subscribe((csvLine)=>{
+    // csvLine =>  "1,2,3" and "4,5,6"
+  });
 ```
 
 ### Use Stream
 
 ```js
-const csv=require('csvtojson');
+const csv = require('csvtojson');
+const readStream = require('fs').createReadStream('csvFilePath');
 
-const readStream=require('fs').createReadStream(csvFilePath);
-
-const writeStream=request.put('http://mysite.com/obj.json');
+const writeStream = request.put('http://mysite.com/obj.json');
 
 readStream.pipe(csv()).pipe(writeStream);
-
 ```
 
 To find more detailed usage, please see [API](#api) section
 
 ## Command Line Usage
 
-### Installation
+### Global Installation
 
-```
-$ npm i -g csvtojson
+```sh
+npm i -g --save csvtojson
 ```
 
 ### Usage
 
-
-```
-$ csvtojson [options] <csv file path>
+```sh
+csvtojson [options] <csv file path>
 ```
 
 ### Example
 
 Convert csv file and save result to json file:
 
-```
-$ csvtojson source.csv > converted.json
+```sh
+csvtojson source.csv > converted.json
 ```
 
 Pipe in csv data:
 
-```
-$ cat ./source.csv | csvtojson > converted.json
+```sh
+cat ./source.csv | csvtojson > converted.json
 ```
 
 Print Help:
 
-```
-$ csvtojson
+```sh
+csvtojson
 ```
 
 # API
@@ -202,7 +198,6 @@ $ csvtojson
 * [Header Row](#header-row)
 * [Column Parser](#column-parser)
 
-
 ## Parameters
 
 `require('csvtojson')` returns a constructor function which takes 2 arguments:
@@ -211,9 +206,10 @@ $ csvtojson
 2. Stream options
 
 ```js
-const csv=require('csvtojson')
-const converter=csv(parserParameters, streamOptions)
+const csv = require('csvtojson');
+const converter = csv(parserParameters, streamOptions);
 ```
+
 Both arguments are optional.
 
 For `Stream Options` please read [Stream Option](https://nodejs.org/api/stream.html#stream_new_stream_transform_options) from Node.JS
@@ -221,14 +217,12 @@ For `Stream Options` please read [Stream Option](https://nodejs.org/api/stream.h
 `parserParameters` is a JSON object like:
 
 ```js
-const converter=csv({
-	noheader:true,
-	trim:true,
-})
+const converter = csv({ noheader:true, trim:true });
 ```
-Following parameters are supported:
 
-* **output**: The format to be converted to. "json" (default) -- convert csv to json. "csv" -- convert csv to csv row array. "line" -- convert csv to csv line string  
+The following parameters are supported:
+
+* **output**: The format to be converted to. "json" (default) -- convert csv to json. "csv" -- convert csv to csv row array. "line" -- convert csv to csv line string
 * **delimiter**: delimiter used for separating columns. Use "auto" if delimiter is unknown in advance, in this case, delimiter will be auto-detected (by best attempt). Use an array to give a list of potential delimiters e.g. [",","|","$"]. default: ","
 * **quote**: If a column contains delimiter, it is able to use quote character to surround the column content. e.g. "hello, world" won't be split into two columns while parsing. Set to "off" will ignore all quotes. default: " (double quote)
 * **trim**: Indicate if parser trim off spaces surrounding column content. e.g. "  content  " will be trimmed to "content". Default: true
@@ -248,7 +242,7 @@ Following parameters are supported:
 * **alwaysSplitAtEOL**: Always interpret each line (as defined by `eol` like `\n`) as a row. This will prevent `eol` characters from being used within a row (even inside a quoted field). Default is false. Change to true if you are confident no inline line breaks (like line break in a cell which has multi line text).
 * **nullObject**: How to parse if a csv cell contains "null". Default false will keep "null" as string. Change to true if a null object is needed.
 * **downstreamFormat**: Option to set what JSON array format is needed by downstream. "line" is also called ndjson format. This format will write lines of JSON (without square brackets and commas) to downstream. "array" will write complete JSON array string to downstream (suitable for file writable stream etc). Default "line"
-* **needEmitAll**: Parser will build JSON result is `.then` is called (or await is used). If this is not desired, set this to false. Default is true. 
+* **needEmitAll**: Parser will build JSON result is `.then` is called (or await is used). If this is not desired, set this to false. Default is true.
 All parameters can be used in Command Line tool.
 
 ## Asynchronous Result Process
@@ -258,20 +252,21 @@ Since `v2.0.0`, asynchronous processing has been fully supported.
 e.g. Process each JSON result asynchronously.
 
 ```js
-csv().fromFile(csvFile)
-.subscribe((json)=>{
-	return new Promise((resolve,reject)=>{
-		// Async operation on the json
-		// don't forget to call resolve and reject
-	})
+csv()
+  .fromFile(csvFile)
+  .subscribe((json) => {
+    return new Promise((resolve,reject) => {
+      // Async operation on the json
+      // don't forget to call resolve and reject
+    });
 })
 ```
+
 For more details please read:
 
 * [Add Promise and Async / Await support](https://github.com/Keyang/node-csvtojson/blob/master/docs/csvtojson-v2.md#add-promise-and-async--await-support)
 * [Add asynchronous line by line processing support](https://github.com/Keyang/node-csvtojson/blob/master/docs/csvtojson-v2.md#add-asynchronous-line-by-line-processing-support)
 * [Async Hooks Support](https://github.com/Keyang/node-csvtojson/blob/master/docs/csvtojson-v2.md#async-hooks-support)
-
 
 ## Events
 
@@ -282,11 +277,12 @@ For more details please read:
 `header` event is emitted for each CSV file once. It passes an array object which contains the names of the header row.
 
 ```js
-const csv=require('csvtojson')
+const csv = require('csvtojson');
+
 csv()
-.on('header',(header)=>{
-	//header=> [header1, header2, header3]
-})
+  .on('header',(header)=>{
+    //header=> [header1, header2, header3]
+  });
 ```
 
 `header` is always an array of strings without types.
@@ -356,13 +352,13 @@ csv()
 		var newData=csvRawData.replace('some value','another value');
 		resolve(newData);
 	})
-	
+
 })
 ```
 
 ### CSV File Line Hook
 
-The function is called each time a file line has been parsed in csv stream. The `lineIdx` is the file line number in the file starting with 0. 
+The function is called each time a file line has been parsed in csv stream. The `lineIdx` is the file line number in the file starting with 0.
 
 ```js
 const csv=require('csvtojson')
@@ -381,8 +377,8 @@ csv()
 	return new Promise((resolve,reject)=>{
 			// async function processing the data.
 	})
-	
-	
+
+
 })
 ```
 
@@ -515,7 +511,7 @@ csv({
 
 ## Column Parser
 
-`Column Parser` allows writing a custom parser for a column in CSV data. 
+`Column Parser` allows writing a custom parser for a column in CSV data.
 
 **What is Column Parser**
 
@@ -580,7 +576,7 @@ csv({
 
 Above example will convert `birthday` column into a js `Date` object.
 
-The returned value will be used in result JSON object. Returning `undefined` will not change result JSON object. 
+The returned value will be used in result JSON object. Returning `undefined` will not change result JSON object.
 
 ### Flat key column
 
@@ -596,7 +592,7 @@ csv({
 	colParser:{
 		"person.number":{
 			flat:true,
-			cellParser: "number" // string or a function 
+			cellParser: "number" // string or a function
 		}
 	}
 })
@@ -608,7 +604,7 @@ csv({
 
 # Contribution
 
-Very much appreciate any types of donation and support. 
+All contributions, donations, and support are greatly appreciated.
 
 ## Code
 
@@ -634,15 +630,15 @@ Thank you to all our backers! [[Become a backer](https://opencollective.com/csvt
 
 Thank you to all our sponsors! (please ask your company to also support this open source project by [becoming a sponsor](https://opencollective.com/csvtojson#sponsor))
 
-## Paypal 
+## Paypal
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=DUBQLRPJADJFQ)
 
 # Browser Usage
 
-To use `csvtojson` in browser is quite simple. There are two ways:
+There are two ways to use `csvtojson` in the browser:
 
-**1. Embed script directly into script tag**
+## Option 1. Embed script directly into script tag
 
 There is a pre-built script located in `browser/csvtojson.min.js`. Simply include that file in a `script` tag in `index.html` page:
 
@@ -651,30 +647,26 @@ There is a pre-built script located in `browser/csvtojson.min.js`. Simply includ
 <!-- or use cdn -->
 <script src="https://cdn.rawgit.com/Keyang/node-csvtojson/d41f44aa/browser/csvtojson.min.js"></script>
 ```
-then use a global `csv` function
-```html 
-<script>
-csv({
-	output: "csv"
-})
-.fromString("a,b,c\n1,2,3")
-.then(function(result){
 
-})
+Then use a global `csv` function
+
+```html
+<script>
+csv({ output: "csv" })
+  .fromString("a,b,c\n1,2,3")
+  .then(function(result) {
+    // ...
+  });
 </script>
 ```
 
+## Option 2. Use webpack or browserify
 
-
-**2. Use webpack or browserify**
-
-If a module packager is preferred, just simply `require("csvtojson")`:
+If a module packager is preferred, simply `require("csvtojson")`:
 
 ```js
-var csv=require("csvtojson");
+var csv = require("csvtojson");
 
-// or with import
+// Or with import
 import * as csv from "csvtojson";
-
-//then use csv as normal
 ```

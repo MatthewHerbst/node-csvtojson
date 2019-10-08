@@ -55,5 +55,11 @@ export interface ParseRuntime {
         onfulfilled: (value: any) => any;
         onrejected: (err: Error) => any;
     };
+    catch?: {
+        onrejected: (err: Error) => any;
+    };
+    finally?: {
+        onfinally: () => any;
+    };
 }
 export declare function initParseRuntime(converter: Converter): ParseRuntime;

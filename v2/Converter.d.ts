@@ -5,7 +5,7 @@ import { CSVParseParam } from "./Parameters";
 import { ParseRuntime } from "./ParseRuntime";
 export declare class Converter extends Transform implements Promise<any> {
     options: TransformOptions;
-    [Symbol.toStringTag]: any;
+    readonly [Symbol.toStringTag]: string;
     preRawData(onRawData: PreRawDataCallback): Converter;
     preFileLine(onFileLine: PreFileLineCallback): Converter;
     subscribe(onNext?: (data: any, lineNumber: number) => void | Promise<void>, onError?: (err: CSVError) => void, onCompleted?: () => void): Converter;
@@ -14,6 +14,7 @@ export declare class Converter extends Transform implements Promise<any> {
     fromString(csvString: string): Converter;
     catch<TResult1 = Promise<any>>(onrejected?: (reason: any) => TResult1 | Promise<TResult1>): Promise<TResult1>;
     then<TResult1 = any, TResult2 = never>(onfulfilled?: (value: any) => TResult1 | Promise<TResult1>, onrejected?: (reason: any) => TResult2 | Promise<TResult2>): Promise<TResult1 | TResult2>;
+    finally<TResult1 = Promise<any>>(onfinally?: () => TResult1 | Promise<TResult1>): Promise<TResult1>;
     readonly parseParam: CSVParseParam;
     readonly parseRuntime: ParseRuntime;
     private params;
@@ -23,7 +24,7 @@ export declare class Converter extends Transform implements Promise<any> {
     constructor(param?: Partial<CSVParseParam>, options?: TransformOptions);
     _transform(chunk: any, encoding: string, cb: Function): void;
     _flush(cb: Function): void;
-    private processEnd(cb);
+    private processEnd;
     readonly parsedLineNumber: number;
 }
 export interface CreateReadStreamOption {

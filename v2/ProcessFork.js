@@ -1,8 +1,11 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -37,7 +40,11 @@ var ProcessorFork = /** @class */ (function (_super) {
             // console.log("flush");
             _this.finalChunk = true;
             _this.next = resolve;
-            _this.childProcess.stdin.end();
+            // In TypeScript 3.7 it should be possible to remove the if-block and do:
+            // this.childProcess.stdin?.end();
+            if (_this.childProcess.stdin) {
+                _this.childProcess.stdin.end();
+            }
             // this.childProcess.stdout.on("end",()=>{
             //   // console.log("!!!!");
             //   this.flushResult();
@@ -91,16 +98,24 @@ var ProcessorFork = /** @class */ (function (_super) {
                 // this.flushResult();
             }
         });
-        this.childProcess.stdout.on("data", function (data) {
-            // console.log("stdout", data.toString());
-            var res = data.toString();
-            // console.log(res);
-            _this.appendBuf(res);
-        });
-        this.childProcess.stderr.on("data", function (data) {
-            // console.log("stderr", data.toString());
-            _this.converter.emit("error", CSVError_1.default.fromJSON(JSON.parse(data.toString())));
-        });
+        // In TypeScript 3.7 it should be possible to remove the if-block and do:
+        // this.childProcess.stdout?.on(...);
+        if (this.childProcess.stdout) {
+            this.childProcess.stdout.on("data", function (data) {
+                // console.log("stdout", data.toString());
+                var res = data.toString();
+                // console.log(res);
+                _this.appendBuf(res);
+            });
+        }
+        // In TypeScript 3.7 it should be possible to remove the if-block and do:
+        // this.childProcess.stderr?.on(...);
+        if (this.childProcess.stderr) {
+            this.childProcess.stderr.on("data", function (data) {
+                // console.log("stderr", data.toString());
+                _this.converter.emit("error", CSVError_1.default.fromJSON(JSON.parse(data.toString())));
+            });
+        }
     };
     ProcessorFork.prototype.flushResult = function () {
         // console.log("flush result", this.resultBuf.length);
@@ -140,10 +155,14 @@ var ProcessorFork = /** @class */ (function (_super) {
             // console.log("chunk", chunk.length);
             _this.next = resolve;
             // this.appendReadBuf(chunk);
-            _this.childProcess.stdin.write(chunk, function () {
-                // console.log("chunk callback");
-                _this.flushResult();
-            });
+            // In TypeScript 3.7 it should be possible to remove the if-block and do:
+            // this.childProcess.stdin?.write(...);
+            if (_this.childProcess.stdin) {
+                _this.childProcess.stdin.write(chunk, function () {
+                    // console.log("chunk callback");
+                    _this.flushResult();
+                });
+            }
         });
     };
     return ProcessorFork;

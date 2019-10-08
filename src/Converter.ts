@@ -69,7 +69,17 @@ export class Converter extends Transform implements Promise<any> {
     return this.fromStream(read);
   }
   catch<TResult1 = Promise<any>>(onrejected?: (reason: any) => TResult1 | Promise<TResult1>): Promise<TResult1> {
-    return this.then(undefined, onrejected);
+    return new Promise((resolve, reject) => {
+      this.parseRuntime.catch = {
+        onrejected: (err: Error) => {
+          if (onrejected) {
+            resolve(onrejected(err));
+          } else {
+            reject(err);
+          }
+        }
+      };
+    });
   }
   then<TResult1 = any, TResult2 = never>(onfulfilled?: (value: any) => TResult1 | Promise<TResult1>, onrejected?: (reason: any) => TResult2 | Promise<TResult2>): Promise<TResult1 | TResult2> {
     return new Promise((resolve, reject) => {
@@ -86,6 +96,19 @@ export class Converter extends Transform implements Promise<any> {
             resolve(onrejected(err));
           } else {
             reject(err);
+          }
+        }
+      }
+    });
+  }
+  finally<TResult1 = Promise<any>>(onfinally?: () => TResult1 | Promise<TResult1>): Promise<TResult1> {
+    return new Promise((resolve) => {
+      this.parseRuntime.finally = {
+        onfinally: () => {
+          if (onfinally) {
+            resolve(onfinally());
+          } else {
+            resolve();
           }
         }
       }

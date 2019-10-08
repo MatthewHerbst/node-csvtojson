@@ -53,11 +53,18 @@ export interface ParseRuntime {
     onError?: (err: CSVError) => void;
     onCompleted?: () => void;
   };
+
+  // Promise support
   then?: {
     onfulfilled: (value: any) => any;
     onrejected: (err: Error) => any;
   }
-
+  catch?: {
+    onrejected: (err: Error) => any;
+  }
+  finally?: {
+    onfinally: () => any;
+  }
 }
 export function initParseRuntime(converter: Converter): ParseRuntime {
   const params = converter.parseParam;

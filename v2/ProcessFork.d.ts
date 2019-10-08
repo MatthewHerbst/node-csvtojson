@@ -13,10 +13,10 @@ export declare class ProcessorFork extends Processor {
     private finalChunk;
     private next?;
     constructor(converter: Converter);
-    private prepareParam(param);
-    private initWorker();
-    private flushResult();
-    private appendBuf(data);
+    private prepareParam;
+    private initWorker;
+    private flushResult;
+    private appendBuf;
     process(chunk: Buffer): Promise<ProcessLineResult[]>;
 }
 export interface Message {

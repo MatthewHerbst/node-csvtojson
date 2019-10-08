@@ -1,8 +1,11 @@
 "use strict";
 var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -37,6 +40,13 @@ var Converter = /** @class */ (function (_super) {
         });
         return _this;
     }
+    Object.defineProperty(Converter.prototype, Symbol.toStringTag, {
+        get: function () {
+            return 'Converter';
+        },
+        enumerable: true,
+        configurable: true
+    });
     Converter.prototype.preRawData = function (onRawData) {
         this.runtime.preRawDataHook = onRawData;
         return this;
@@ -94,7 +104,19 @@ var Converter = /** @class */ (function (_super) {
         return this.fromStream(read);
     };
     Converter.prototype.catch = function (onrejected) {
-        return this.then(undefined, onrejected);
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.parseRuntime.catch = {
+                onrejected: function (err) {
+                    if (onrejected) {
+                        resolve(onrejected(err));
+                    }
+                    else {
+                        reject(err);
+                    }
+                }
+            };
+        });
     };
     Converter.prototype.then = function (onfulfilled, onrejected) {
         var _this = this;
@@ -114,6 +136,21 @@ var Converter = /** @class */ (function (_super) {
                     }
                     else {
                         reject(err);
+                    }
+                }
+            };
+        });
+    };
+    Converter.prototype.finally = function (onfinally) {
+        var _this = this;
+        return new Promise(function (resolve) {
+            _this.parseRuntime.finally = {
+                onfinally: function () {
+                    if (onfinally) {
+                        resolve(onfinally());
+                    }
+                    else {
+                        resolve();
                     }
                 }
             };

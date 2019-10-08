@@ -11,7 +11,13 @@ export class ProcessorFork extends Processor {
       // console.log("flush");
       this.finalChunk = true;
       this.next = resolve;
-      this.childProcess.stdin.end();
+
+      // In TypeScript 3.7 it should be possible to remove the if-block and do:
+      // this.childProcess.stdin?.end();
+      if (this.childProcess.stdin) {
+        this.childProcess.stdin.end();
+      }
+
       // this.childProcess.stdout.on("end",()=>{
       //   // console.log("!!!!");
       //   this.flushResult();
@@ -74,18 +80,27 @@ export class ProcessorFork extends Processor {
         // this.flushResult();
       }
     });
-    this.childProcess.stdout.on("data", (data) => {
-      // console.log("stdout", data.toString());
-      const res = data.toString();
-      // console.log(res);
-      this.appendBuf(res);
 
-    });
-    this.childProcess.stderr.on("data", (data) => {
-      // console.log("stderr", data.toString());
-      this.converter.emit("error", CSVError.fromJSON(JSON.parse(data.toString())));
-    });
+    // In TypeScript 3.7 it should be possible to remove the if-block and do:
+    // this.childProcess.stdout?.on(...);
+    if (this.childProcess.stdout) {
+      this.childProcess.stdout.on("data", (data) => {
+        // console.log("stdout", data.toString());
+        const res = data.toString();
+        // console.log(res);
+        this.appendBuf(res);
 
+      });
+    }
+
+    // In TypeScript 3.7 it should be possible to remove the if-block and do:
+    // this.childProcess.stderr?.on(...);
+    if (this.childProcess.stderr) {
+      this.childProcess.stderr.on("data", (data) => {
+        // console.log("stderr", data.toString());
+        this.converter.emit("error", CSVError.fromJSON(JSON.parse(data.toString())));
+      });
+    }
   }
   private flushResult() {
     // console.log("flush result", this.resultBuf.length);
@@ -124,10 +139,15 @@ export class ProcessorFork extends Processor {
       // console.log("chunk", chunk.length);
       this.next = resolve;
       // this.appendReadBuf(chunk);
-      this.childProcess.stdin.write(chunk, () => {
-        // console.log("chunk callback");
-        this.flushResult();
-      });
+
+      // In TypeScript 3.7 it should be possible to remove the if-block and do:
+      // this.childProcess.stdin?.write(...);
+      if (this.childProcess.stdin) {
+        this.childProcess.stdin.write(chunk, () => {
+          // console.log("chunk callback");
+          this.flushResult();
+        });
+      }
     });
   }
 }

@@ -1,7 +1,8 @@
+import set from "lodash/set";
+
 import { Converter } from "./Converter";
 import CSVError from "./CSVError";
 import { CellParser, ColumnParam } from "./Parameters";
-import set from "lodash/set";
 import { ParseRuntime } from "./ParseRuntime";
 
 var numReg = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
@@ -20,7 +21,7 @@ export type JSONResult = {
   [key: string]: any
 }
 
-function processRow(row: string[], conv: Converter, index): JSONResult | null {
+function processRow(row: string[], conv: Converter, index: number): JSONResult | null {
 
   if (conv.parseParam.checkColumn && conv.parseRuntime.headers && row.length !== conv.parseRuntime.headers.length) {
     throw (CSVError.column_mismatched(conv.parseRuntime.parsedLineNumber + index))
@@ -38,7 +39,7 @@ function processRow(row: string[], conv: Converter, index): JSONResult | null {
 function convertRowToJson(row: string[], headRow: string[], conv: Converter): { [key: string]: any } | null {
   let hasValue = false;
   const resultRow = {};
-  
+
   for (let i = 0, len = row.length; i < len; i++) {
     let item = row[i];
 
@@ -109,12 +110,13 @@ function getConvFunc(head: string, i: number, conv: Converter): CellParser | nul
     }
   }
 }
-function setPath(resultJson: any, head: string, value: any, conv: Converter,headIdx:number) {
+
+function setPath(resultJson: any, head: string, value: any, conv: Converter, headIdx: number) {
   if (!conv.parseRuntime.columnValueSetter[headIdx]) {
     if (conv.parseParam.flatKeys) {
       conv.parseRuntime.columnValueSetter[headIdx] = flatSetter;
     } else {
-      
+
       if (head.indexOf(".") > -1) {
         const headArr=head.split(".");
         let jsonHead=true;
@@ -142,13 +144,14 @@ function setPath(resultJson: any, head: string, value: any, conv: Converter,head
   // flatSetter(resultJson, head, value);
 
 }
+
 function flatSetter(resultJson: any, head: string, value: any) {
   resultJson[head] = value;
 }
+
 function jsonSetter(resultJson: any, head: string, value: any) {
   set(resultJson, head, value);
 }
-
 
 function checkType(item: string, head: string, headIdx: number, conv: Converter): Function {
   if (conv.parseRuntime.headerType[headIdx]) {

@@ -1,10 +1,12 @@
-import { ParseRuntime } from "./ParseRuntime";
 import stripBom from "strip-bom";
+
+import { ParseRuntime } from "./ParseRuntime";
+
 /**
  * For each data chunk coming to parser:
  * 1. append the data to the buffer that is left from last chunk
  * 2. check if utf8 chars being split, if does, stripe the bytes and add to left buffer.
- * 3. stripBom 
+ * 3. stripBom
  */
 export function prepareData(chunk: Buffer, runtime: ParseRuntime): string {
   const workChunk = concatLeftChunk(chunk, runtime);
@@ -17,7 +19,7 @@ export function prepareData(chunk: Buffer, runtime: ParseRuntime): string {
   }
 }
 /**
- *  append data to buffer that is left form last chunk
+ *  Append data to buffer that is left form last chunk
  */
 function concatLeftChunk(chunk: Buffer, runtime: ParseRuntime): Buffer {
   if (runtime.csvLineBuffer && runtime.csvLineBuffer.length > 0) {
@@ -27,7 +29,7 @@ function concatLeftChunk(chunk: Buffer, runtime: ParseRuntime): Buffer {
   }
 }
 /**
- * check if utf8 chars being split, if does, stripe the bytes and add to left buffer.
+ * Check if utf8 chars being split, if does, stripe the bytes and add to left buffer.
  */
 function cleanUtf8Split(chunk: Buffer, runtime: ParseRuntime): Buffer {
   let idx = chunk.length - 1;
@@ -35,7 +37,7 @@ function cleanUtf8Split(chunk: Buffer, runtime: ParseRuntime): Buffer {
    * From Keyang:
    * The code below is to check if a single utf8 char (which could be multiple bytes) being split.
    * If the char being split, the buffer from two chunk needs to be concat
-   * check how utf8 being encoded to understand the code below. 
+   * check how utf8 being encoded to understand the code below.
    * If anyone has any better way to do this, please let me know.
    */
   if ((chunk[idx] & 1 << 7) != 0) {

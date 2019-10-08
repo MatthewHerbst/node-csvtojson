@@ -9,15 +9,10 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var stream_1 = require("stream");
 var Parameters_1 = require("./Parameters");
 var ParseRuntime_1 = require("./ParseRuntime");
-var bluebird_1 = __importDefault(require("bluebird"));
-// import { ProcessorFork } from "./ProcessFork";
 var ProcessorLocal_1 = require("./ProcessorLocal");
 var Result_1 = require("./Result");
 var Converter = /** @class */ (function (_super) {
@@ -29,14 +24,9 @@ var Converter = /** @class */ (function (_super) {
         _this.params = Parameters_1.mergeParams(param);
         _this.runtime = ParseRuntime_1.initParseRuntime(_this);
         _this.result = new Result_1.Result(_this);
-        // if (this.params.fork) {
-        //   this.processor = new ProcessorFork(this);
-        // } else {
         _this.processor = new ProcessorLocal_1.ProcessorLocal(_this);
-        // }
         _this.once("error", function (err) {
-            // console.log("BBB");
-            //wait for next cycle to emit the errors.
+            // Wait for next cycle to emit the errors.
             setImmediate(function () {
                 _this.result.processError(err);
                 _this.emit("done", err);
@@ -103,9 +93,12 @@ var Converter = /** @class */ (function (_super) {
         };
         return this.fromStream(read);
     };
+    Converter.prototype.catch = function (onrejected) {
+        return this.then(undefined, onrejected);
+    };
     Converter.prototype.then = function (onfulfilled, onrejected) {
         var _this = this;
-        return new bluebird_1.default(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
             _this.parseRuntime.then = {
                 onfulfilled: function (value) {
                     if (onfulfilled) {
@@ -144,7 +137,6 @@ var Converter = /** @class */ (function (_super) {
         var _this = this;
         this.processor.process(chunk)
             .then(function (result) {
-            // console.log(result);
             if (result.length > 0) {
                 _this.runtime.started = true;
                 return _this.result.processResult(result);

@@ -23,7 +23,7 @@ function prepareData(chunk, runtime) {
 }
 exports.prepareData = prepareData;
 /**
- *  append data to buffer that is left form last chunk
+ *  Append data to buffer that is left form last chunk
  */
 function concatLeftChunk(chunk, runtime) {
     if (runtime.csvLineBuffer && runtime.csvLineBuffer.length > 0) {
@@ -34,7 +34,7 @@ function concatLeftChunk(chunk, runtime) {
     }
 }
 /**
- * check if utf8 chars being split, if does, stripe the bytes and add to left buffer.
+ * Check if utf8 chars being split, if does, stripe the bytes and add to left buffer.
  */
 function cleanUtf8Split(chunk, runtime) {
     var idx = chunk.length - 1;

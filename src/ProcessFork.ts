@@ -1,16 +1,16 @@
-import { Processor, ProcessLineResult } from "./Processor";
-import P from "bluebird"
-import { Converter } from "./Converter";
 import { ChildProcess } from "child_process";
+import { Readable, Writable } from "stream";
+
+import { Converter } from "./Converter";
+import CSVError from "./CSVError";
 import { CSVParseParam, mergeParams } from "./Parameters";
 import { ParseRuntime } from "./ParseRuntime";
-import { Readable, Writable } from "stream";
+import { Processor, ProcessLineResult } from "./Processor";
 import { bufFromString, emptyBuffer } from "./util";
-import CSVError from "./CSVError";
 
 export class ProcessorFork extends Processor {
-  flush(): P<ProcessLineResult[]> {
-    return new P((resolve, reject) => {
+  flush(): Promise<ProcessLineResult[]> {
+    return new Promise((resolve, reject) => {
       // console.log("flush");
       this.finalChunk = true;
       this.next = resolve;
@@ -21,9 +21,9 @@ export class ProcessorFork extends Processor {
       // })
     });
   }
-  destroy(): P<void> {
+  destroy(): Promise<void> {
     this.childProcess.kill();
-    return P.resolve();
+    return Promise.resolve();
   }
   childProcess: ChildProcess;
   inited: boolean = false;
@@ -38,7 +38,7 @@ export class ProcessorFork extends Processor {
     });
     this.initWorker();
   }
-  private prepareParam(param:CSVParseParam):any{
+  private prepareParam(param: CSVParseParam):any{
     const clone:any=mergeParams(param);
     if (clone.ignoreColumns){
       clone.ignoreColumns={
@@ -67,11 +67,11 @@ export class ProcessorFork extends Processor {
         this.inited = true;
       } else if (msg.cmd === "eol") {
         if (this.converter.listeners("eol").length > 0){
-          this.converter.emit("eol",(msg as StringMessage).value);
+          this.converter.emit("eol", (msg as StringMessage).value);
         }
       }else if (msg.cmd === "header") {
         if (this.converter.listeners("header").length > 0){
-          this.converter.emit("header",(msg as StringMessage).value);
+          this.converter.emit("header", (msg as StringMessage).value);
         }
       }else if (msg.cmd === "done"){
 
@@ -124,8 +124,8 @@ export class ProcessorFork extends Processor {
     // console.log("buf length",this.resultBuf.length);
   }
 
-  process(chunk: Buffer): P<ProcessLineResult[]> {
-    return new P((resolve, reject) => {
+  process(chunk: Buffer): Promise<ProcessLineResult[]> {
+    return new Promise((resolve, reject) => {
       // console.log("chunk", chunk.length);
       this.next = resolve;
       // this.appendReadBuf(chunk);
@@ -144,7 +144,9 @@ export interface Message {
 export interface InitMessage extends Message {
   params: any;
 }
+
 export interface StringMessage extends Message {
   value: string
 }
+
 export const EOM = "\x03";

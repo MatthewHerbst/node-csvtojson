@@ -1,22 +1,15 @@
+import { map } from "lodash/map";
 import { Transform, TransformOptions, Readable } from "stream";
+
+import CSVError from "./CSVError";
 import { CSVParseParam, mergeParams } from "./Parameters";
 import { ParseRuntime, initParseRuntime } from "./ParseRuntime";
-import P from "bluebird";
-import { stringToLines } from "./fileline";
-import { map } from "lodash/map";
-import { RowSplit, RowSplitResult } from "./rowSplit";
-import getEol from "./getEol";
-import lineToJson, { JSONResult } from "./lineToJson";
-import { Processor, ProcessLineResult } from "./Processor";
-// import { ProcessorFork } from "./ProcessFork";
+import { Processor } from "./Processor";
 import { ProcessorLocal } from "./ProcessorLocal";
 import { Result } from "./Result";
-import CSVError from "./CSVError";
-import { bufFromString } from "./util";
 
-
-
-export class Converter extends Transform implements PromiseLike<any[]> {
+export class Converter extends Transform implements Promise<any> {
+  [Symbol.toStringTag]: any;
   preRawData(onRawData: PreRawDataCallback): Converter {
     this.runtime.preRawDataHook = onRawData;
     return this;
@@ -26,14 +19,15 @@ export class Converter extends Transform implements PromiseLike<any[]> {
     return this;
   }
   subscribe(
-    onNext?: (data: any, lineNumber: number) => void | PromiseLike<void>,
+    onNext?: (data: any, lineNumber: number) => void | Promise<void>,
     onError?: (err: CSVError) => void,
-    onCompleted?: () => void): Converter {
+    onCompleted?: () => void
+  ): Converter {
     this.parseRuntime.subscribe = {
       onNext,
       onError,
       onCompleted
-    }
+    };
     return this;
   }
   fromFile(filePath: string, options?: string | CreateReadStreamOption | undefined): Converter {
@@ -73,10 +67,13 @@ export class Converter extends Transform implements PromiseLike<any[]> {
     }
     return this.fromStream(read);
   }
-  then<TResult1 = any[], TResult2 = never>(onfulfilled?: (value: any[]) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): PromiseLike<TResult1 | TResult2> {
-    return new P((resolve, reject) => {
+  catch<TResult1 = Promise<any>>(onrejected?: (reason: any) => TResult1 | Promise<TResult1>): Promise<TResult1> {
+    return this.then(undefined, onrejected);
+  }
+  then<TResult1 = any, TResult2 = never>(onfulfilled?: (value: any) => TResult1 | Promise<TResult1>, onrejected?: (reason: any) => TResult2 | Promise<TResult2>): Promise<TResult1 | TResult2> {
+    return new Promise((resolve, reject) => {
       this.parseRuntime.then = {
-        onfulfilled: (value: any[]) => {
+        onfulfilled: (value: any) => {
           if (onfulfilled) {
             resolve(onfulfilled(value));
           } else {
@@ -108,14 +105,11 @@ export class Converter extends Transform implements PromiseLike<any[]> {
     this.params = mergeParams(param);
     this.runtime = initParseRuntime(this);
     this.result = new Result(this);
-    // if (this.params.fork) {
-    //   this.processor = new ProcessorFork(this);
-    // } else {
+
     this.processor = new ProcessorLocal(this);
-    // }
+
     this.once("error", (err: any) => {
-      // console.log("BBB");
-      //wait for next cycle to emit the errors.
+      // Wait for next cycle to emit the errors.
       setImmediate(() => {
         this.result.processError(err);
         this.emit("done", err);
@@ -131,22 +125,24 @@ export class Converter extends Transform implements PromiseLike<any[]> {
   _transform(chunk: any, encoding: string, cb: Function) {
     this.processor.process(chunk)
       .then((result) => {
-        // console.log(result);
         if (result.length > 0) {
           this.runtime.started = true;
 
           return this.result.processResult(result);
         }
       })
-      .then(() => {
-        this.emit("drained");
-        cb();
-      }, (error) => {
-        this.runtime.hasError = true;
-        this.runtime.error = error;
-        this.emit("error", error);
-        cb();
-      });
+      .then(
+        () => {
+          this.emit("drained");
+          cb();
+        },
+        (error) => {
+          this.runtime.hasError = true;
+          this.runtime.error = error;
+          this.emit("error", error);
+          cb();
+        }
+      );
   }
   _flush(cb: Function) {
     this.processor.flush()
@@ -156,12 +152,15 @@ export class Converter extends Transform implements PromiseLike<any[]> {
           return this.result.processResult(data);
         }
       })
-      .then(() => {
-        this.processEnd(cb);
-      }, (err) => {
-        this.emit("error", err);
-        cb();
-      })
+      .then(
+        () => {
+          this.processEnd(cb);
+        },
+        (err) => {
+          this.emit("error", err);
+          cb();
+        }
+      );
   }
   private processEnd(cb) {
     this.result.endProcess();
@@ -184,6 +183,5 @@ export interface CreateReadStreamOption {
 }
 export type CallBack = (err: Error, data: Array<any>) => void;
 
-
-export type PreFileLineCallback = (line: string, lineNumber: number) => string | PromiseLike<string>;
-export type PreRawDataCallback = (csvString: string) => string | PromiseLike<string>;
+export type PreFileLineCallback = (line: string, lineNumber: number) => string | Promise<string>;
+export type PreRawDataCallback = (csvString: string) => string | Promise<string>;

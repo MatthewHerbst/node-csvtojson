@@ -1,7 +1,6 @@
-import { CSVParseParam, CellParser } from "./Parameters";
-import { Converter, PreRawDataCallback, PreFileLineCallback } from "./Converter";
-import { ChildProcess } from "child_process";
 import CSVError from "./CSVError";
+import { Converter, PreRawDataCallback, PreFileLineCallback } from "./Converter";
+import { CellParser } from "./Parameters";
 
 export interface ParseRuntime {
   /**
@@ -13,7 +12,7 @@ export interface ParseRuntime {
    */
   needProcessIncludeColumn: boolean;
   /**
-   * the indexes of columns to reserve, undefined means reserve all, [] means hide all
+   * The indexes of columns to reserve, undefined means reserve all, [] means hide all
    */
   selectedColumns?: number[];
   ended: boolean;
@@ -39,9 +38,9 @@ export interface ParseRuntime {
    */
   headers?: any[],
   csvLineBuffer?: Buffer,
-  
+
   /**
-   * after first chunk of data being processed and emitted, started will become true.
+   * After first chunk of data being processed and emitted, started will become true.
    */
   started: boolean,
   preRawDataHook?: PreRawDataCallback,
@@ -50,12 +49,12 @@ export interface ParseRuntime {
 
   columnValueSetter: Function[];
   subscribe?: {
-    onNext?: (data: any, lineNumber:number) => void | PromiseLike<void>;
+    onNext?: (data: any, lineNumber:number) => void | Promise<void>;
     onError?: (err: CSVError) => void;
     onCompleted?: () => void;
   };
   then?: {
-    onfulfilled: (value: any[]) => any;
+    onfulfilled: (value: any) => any;
     onrejected: (err: Error) => any;
   }
 

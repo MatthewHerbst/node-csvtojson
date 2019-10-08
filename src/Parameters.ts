@@ -1,6 +1,6 @@
 export interface CSVParseParam {
   /**
-   *   delimiter used for seperating columns. Use "auto" if delimiter is unknown in advance, in this case, delimiter will be auto-detected (by best attempt). Use an array to give a list of potential delimiters e.g. [",","|","$"]. default: ","
+   *   delimiter used for separating columns. Use "auto" if delimiter is unknown in advance, in this case, delimiter will be auto-detected (by best attempt). Use an array to give a list of potential delimiters e.g. [",","|","$"]. default: ","
    */
   delimiter: string | string[];
   /**
@@ -20,7 +20,7 @@ export interface CSVParseParam {
    */
   trim: boolean;
   /**
-   *  This parameter turns on and off whether check field type. Default is false. 
+   *  This parameter turns on and off whether check field type. Default is false.
    */
   checkType: boolean;
   /**
@@ -70,7 +70,7 @@ export interface CSVParseParam {
    */
   alwaysSplitAtEOL: boolean;
   /**
-   * The format to be converted to. "json" (default) -- convert csv to json. "csv" -- convert csv to csv row array. "line" -- convert csv to csv line string 
+   * The format to be converted to. "json" (default) -- convert csv to json. "csv" -- convert csv to csv row array. "line" -- convert csv to csv line string
    */
   output: "json" | "csv" | "line";
 

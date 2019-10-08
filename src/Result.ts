@@ -1,8 +1,9 @@
+import { EOL } from "os";
+
 import { Converter } from "./Converter";
 import { ProcessLineResult } from "./Processor";
-import P from "bluebird";
 import CSVError from "./CSVError";
-import { EOL } from "os";
+
 export class Result {
   private get needEmitLine(): boolean {
     return !!this.converter.parseRuntime.subscribe && !!this.converter.parseRuntime.subscribe.onNext || this.needPushDownstream
@@ -20,15 +21,15 @@ export class Result {
   }
   private finalResult: any[] = [];
   constructor(private converter: Converter) { }
-  processResult(resultLines: ProcessLineResult[]): P<any> {
+  processResult(resultLines: ProcessLineResult[]): Promise<any> {
     const startPos = this.converter.parseRuntime.parsedLineNumber;
     if (this.needPushDownstream && this.converter.parseParam.downstreamFormat === "array") {
       if (startPos === 0) {
         pushDownstream(this.converter, "[" + EOL);
       }
     }
-    // let prom: P<any>;
-    return new P((resolve, reject) => {
+
+    return new Promise((resolve, reject) => {
       if (this.needEmitLine) {
         processLineByLine(
           resultLines,
@@ -43,13 +44,12 @@ export class Result {
               resolve();
             }
           },
-        )
-        // resolve();
+        );
       } else {
         this.appendFinalResult(resultLines);
         resolve();
       }
-    })
+    });
   }
   appendFinalResult(lines: any[]) {
     if (this.needEmitAll) {
@@ -66,7 +66,7 @@ export class Result {
     }
   }
   endProcess() {
-    
+
       if (this.converter.parseRuntime.then && this.converter.parseRuntime.then.onfulfilled) {
         if (this.needEmitAll) {
           this.converter.parseRuntime.then.onfulfilled(this.finalResult);
@@ -85,7 +85,6 @@ export class Result {
 
 function processLineByLine(
   lines: ProcessLineResult[],
-
   conv: Converter,
   offset: number,
   needPushDownstream: boolean,
@@ -101,9 +100,12 @@ function processLineByLine(
       offset++;
       // if (isAsync === undefined) {
       if (res && res.then) {
-        res.then(function () {
-          processRecursive(lines, hook, conv, offset, needPushDownstream, cb, nextLine);
-        }, cb);
+        res.then(
+          function () {
+            processRecursive(lines, hook, conv, offset, needPushDownstream, cb, nextLine);
+          },
+          cb
+        );
       } else {
         // processRecursive(lines, hook, conv, offset, needPushDownstream, cb, nextLine, false);
         if (needPushDownstream) {
@@ -120,7 +122,7 @@ function processLineByLine(
         cb();
       }
       // } else if (isAsync === true) {
-      //   (res as PromiseLike<void>).then(function () {
+      //   (res as Promise<void>).then(function () {
       //     processRecursive(lines, hook, conv, offset, needPushDownstream, cb, nextLine, true);
       //   }, cb);
       // } else if (isAsync === false) {
@@ -132,17 +134,15 @@ function processLineByLine(
           const line = lines[offset++];
           pushDownstream(conv, line);
         }
-
       }
       cb();
     }
-
   }
 }
 
 function processRecursive(
   lines: ProcessLineResult[],
-  hook: (data: any, lineNumber: number) => void | PromiseLike<void>,
+  hook: (data: any, lineNumber: number) => void | Promise<void>,
   conv: Converter,
   offset: number,
   needPushDownstream: boolean,

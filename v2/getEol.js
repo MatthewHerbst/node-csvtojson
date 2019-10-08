@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-//return first eol found from a data chunk.
+// Return first eol found from a data chunk.
 function default_1(data, param) {
     if (!param.eol && data) {
         for (var i = 0, len = data.length; i < len; i++) {

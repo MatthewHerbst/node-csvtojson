@@ -32,7 +32,6 @@ var RowSplit = /** @class */ (function () {
         }
         var quote = this.quote;
         var trim = this.trim;
-        var escape = this.escape;
         if (this.conv.parseRuntime.delimiter instanceof Array || this.conv.parseRuntime.delimiter.toLowerCase() === "auto") {
             this.conv.parseRuntime.delimiter = this.getDelimiter(fileline);
         }
@@ -82,13 +81,13 @@ var RowSplit = /** @class */ (function () {
                         var prev = "";
                         for (var _i = 0, e_1 = e; _i < e_1.length; _i++) {
                             var c = e_1[_i];
-                            // count quotes only if previous character is not escape char
+                            // Count quotes only if previous character is not escape char
                             if (c === quote && prev !== this.escape) {
                                 count++;
                                 prev = "";
                             }
                             else {
-                                // save previous char to temp variable
+                                // Save previous char to temp variable
                                 prev = c;
                             }
                         }
@@ -119,8 +118,8 @@ var RowSplit = /** @class */ (function () {
                     continue;
                 }
             }
-            else { //previous quote not closed
-                if (this.isQuoteClose(e)) { //close double quote
+            else { // Previous quote not closed
+                if (this.isQuoteClose(e)) { // Close double quote
                     inquote = false;
                     e = e.substr(0, len - 1);
                     quoteBuff += delimiter + e;
@@ -166,8 +165,9 @@ var RowSplit = /** @class */ (function () {
     RowSplit.prototype.isQuoteOpen = function (str) {
         var quote = this.quote;
         var escape = this.escape;
-        return str[0] === quote && (str[1] !== quote ||
-            str[1] === escape && (str[2] === quote || str.length === 2));
+        return str[0] === quote &&
+            (str[1] !== quote ||
+                str[1] === escape && (str[2] === quote || str.length === 2));
     };
     RowSplit.prototype.isQuoteClose = function (str) {
         var quote = this.quote;

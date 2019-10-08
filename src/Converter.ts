@@ -1,4 +1,3 @@
-import { map } from "lodash/map";
 import { Transform, TransformOptions, Readable } from "stream";
 
 import CSVError from "./CSVError";

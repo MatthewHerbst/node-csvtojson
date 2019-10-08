@@ -49,7 +49,7 @@ export interface ParseRuntime {
 
   columnValueSetter: Function[];
   subscribe?: {
-    onNext?: (data: any, lineNumber:number) => void | Promise<void>;
+    onNext?: (data: any, lineNumber: number) => void | Promise<void>;
     onError?: (err: CSVError) => void;
     onCompleted?: () => void;
   };
@@ -79,11 +79,14 @@ export function initParseRuntime(converter: Converter): ParseRuntime {
     parsedLineNumber: 0,
     columnValueSetter: [],
   }
+
   if (params.ignoreColumns) {
     rtn.needProcessIgnoreColumn = true;
   }
+
   if (params.includeColumns) {
     rtn.needProcessIncludeColumn = true;
   }
+
   return rtn;
 }

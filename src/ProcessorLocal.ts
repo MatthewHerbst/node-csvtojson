@@ -1,12 +1,12 @@
-import { Processor, ProcessLineResult } from "./Processor";
+import CSVError from "./CSVError";
 import { prepareData } from "./dataClean";
-import getEol from "./getEol";
 import { stringToLines } from "./fileline";
-import { bufFromString, filterArray,trimLeft } from "./util";
-import { RowSplit } from "./rowSplit";
+import getEol from "./getEol";
 import lineToJson from "./lineToJson";
 import { ParseRuntime } from "./ParseRuntime";
-import CSVError from "./CSVError";
+import { Processor, ProcessLineResult } from "./Processor";
+import { RowSplit } from "./rowSplit";
+import { bufFromString, filterArray,trimLeft } from "./util";
 
 export class ProcessorLocal extends Processor {
   flush(): Promise<ProcessLineResult[]> {
@@ -80,7 +80,7 @@ export class ProcessorLocal extends Processor {
       this.converter.emit("eol", runtime.eol);
       this.eolEmitted = true;
     }
-    // trim csv file has initial blank lines.
+    // Trim csv file has initial blank lines.
     if (params.ignoreEmpty && !runtime.started) {
       csv = trimLeft(csv);
     }
@@ -99,9 +99,7 @@ export class ProcessorLocal extends Processor {
         prom = Promise.resolve(stringToLineResult.lines);
       }
       return prom.then((lines) => {
-        if (!runtime.started
-          && !this.runtime.headers
-        ) {
+        if (!runtime.started && !this.runtime.headers) {
           return this.processDataWithHead(lines);
         } else {
           return this.processCSVBody(lines);
@@ -189,7 +187,6 @@ export class ProcessorLocal extends Processor {
       }
       this.runtime.headers = filterArray(this.runtime.headers, this.runtime.selectedColumns);
     }
-
   }
   private processCSVBody(lines: string[]): ProcessLineResult[] {
     if (this.params.output === "line") {
@@ -209,7 +206,6 @@ export class ProcessorLocal extends Processor {
     // this.lastIndex += jsonArr.length;
     // this.recordNum += jsonArr.length;
   }
-
   private prependLeftBuf(buf: Buffer) {
     if (buf) {
       if (this.runtime.csvLineBuffer) {
@@ -218,7 +214,6 @@ export class ProcessorLocal extends Processor {
         this.runtime.csvLineBuffer = buf;
       }
     }
-
   }
   private runPreLineHook(lines: string[]): Promise<string[]> {
     return new Promise((resolve, reject) => {

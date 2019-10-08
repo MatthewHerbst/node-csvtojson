@@ -1,8 +1,8 @@
 import { EOL } from "os";
 
 import { Converter } from "./Converter";
-import { ProcessLineResult } from "./Processor";
 import CSVError from "./CSVError";
+import { ProcessLineResult } from "./Processor";
 
 export class Result {
   private get needEmitLine(): boolean {
@@ -70,7 +70,7 @@ export class Result {
       if (this.converter.parseRuntime.then && this.converter.parseRuntime.then.onfulfilled) {
         if (this.needEmitAll) {
           this.converter.parseRuntime.then.onfulfilled(this.finalResult);
-        }else{
+        } else{
           this.converter.parseRuntime.then.onfulfilled([]);
         }
       }
@@ -78,7 +78,7 @@ export class Result {
       this.converter.parseRuntime.subscribe.onCompleted();
     }
     if (this.needPushDownstream && this.converter.parseParam.downstreamFormat === "array") {
-      pushDownstream(this.converter, "]" + EOL);
+      pushDownstream(this.converter, `]${EOL}`);
     }
   }
 }
@@ -154,10 +154,11 @@ function processRecursive(
   }
   processLineByLine(lines, conv, offset, needPushDownstream, cb);
 }
+
 function pushDownstream(conv: Converter, res: ProcessLineResult) {
   if (typeof res === "object" && !conv.options.objectMode) {
     const data = JSON.stringify(res);
-    conv.push(data + (conv.parseParam.downstreamFormat === "array" ? "," + EOL : EOL), "utf8");
+    conv.push(data + (conv.parseParam.downstreamFormat === "array" ? `,${EOL}` : EOL), "utf8");
   } else {
     conv.push(res);
   }

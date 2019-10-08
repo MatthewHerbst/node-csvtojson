@@ -1,6 +1,6 @@
 import { Converter } from "./Converter";
-import { ProcessLineResult } from "./Processor";
 import CSVError from "./CSVError";
+import { ProcessLineResult } from "./Processor";
 export declare class Result {
     private converter;
     private readonly needEmitLine;

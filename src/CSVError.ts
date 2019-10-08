@@ -13,7 +13,7 @@ export default class CSVError extends Error {
     public line: number,
     public extra?: string
   ) {
-    super("Error: " + err + ". JSON Line number: " + line + (extra ? " near: " + extra : ""));
+    super(`Error: ${err}. JSON Line number: ${line}${(extra ? " near: " + extra : "")}`);
     this.name = "CSV Parse Error";
   }
   toJSON() {
@@ -21,7 +21,7 @@ export default class CSVError extends Error {
       err: this.err,
       line: this.line,
       extra: this.extra
-    }
+    };
   }
 
 }

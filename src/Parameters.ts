@@ -119,9 +119,11 @@ export function mergeParams(params?: Partial<CSVParseParam>): CSVParseParam {
     downstreamFormat:"line",
     needEmitAll:true
   }
+
   if (!params) {
     params = {};
   }
+
   for (let key in params) {
     if (params.hasOwnProperty(key)) {
       if (Array.isArray(params[key])) {
@@ -131,6 +133,7 @@ export function mergeParams(params?: Partial<CSVParseParam>): CSVParseParam {
       }
     }
   }
+
   return defaultParam;
 }
 

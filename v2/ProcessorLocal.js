@@ -13,14 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Processor_1 = require("./Processor");
-var dataClean_1 = require("./dataClean");
-var getEol_1 = __importDefault(require("./getEol"));
-var fileline_1 = require("./fileline");
-var util_1 = require("./util");
-var rowSplit_1 = require("./rowSplit");
-var lineToJson_1 = __importDefault(require("./lineToJson"));
 var CSVError_1 = __importDefault(require("./CSVError"));
+var dataClean_1 = require("./dataClean");
+var fileline_1 = require("./fileline");
+var getEol_1 = __importDefault(require("./getEol"));
+var lineToJson_1 = __importDefault(require("./lineToJson"));
+var Processor_1 = require("./Processor");
+var rowSplit_1 = require("./rowSplit");
+var util_1 = require("./util");
 var ProcessorLocal = /** @class */ (function (_super) {
     __extends(ProcessorLocal, _super);
     function ProcessorLocal() {
@@ -113,7 +113,7 @@ var ProcessorLocal = /** @class */ (function (_super) {
             this.converter.emit("eol", runtime.eol);
             this.eolEmitted = true;
         }
-        // trim csv file has initial blank lines.
+        // Trim csv file has initial blank lines.
         if (params.ignoreEmpty && !runtime.started) {
             csv = util_1.trimLeft(csv);
         }
@@ -134,8 +134,7 @@ var ProcessorLocal = /** @class */ (function (_super) {
                 prom = Promise.resolve(stringToLineResult.lines);
             }
             return prom.then(function (lines) {
-                if (!runtime.started
-                    && !_this.runtime.headers) {
+                if (!runtime.started && !_this.runtime.headers) {
                     return _this.processDataWithHead(lines);
                 }
                 else {

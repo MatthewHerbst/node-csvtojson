@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var getEol_1 = __importDefault(require("./getEol"));
 /**
- * convert data chunk to file lines array
+ * Convert data chunk to file lines array
  * @param  {string} data  data chunk as utf8 string
  * @param  {object} param Converter param object
  * @return {Object} {lines:[line1,line2...],partial:String}

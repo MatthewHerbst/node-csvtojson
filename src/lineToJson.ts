@@ -3,7 +3,6 @@ import set from "lodash/set";
 import { Converter } from "./Converter";
 import CSVError from "./CSVError";
 import { CellParser, ColumnParam } from "./Parameters";
-import { ParseRuntime } from "./ParseRuntime";
 
 var numReg = /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/;
 
@@ -84,6 +83,7 @@ const builtInConv: { [key: string]: CellParser } = {
   "number": numberType,
   "omit": function () { }
 }
+
 function getConvFunc(head: string, i: number, conv: Converter): CellParser | null {
   if (conv.parseRuntime.columnConv[i] !== undefined) {
     return conv.parseRuntime.columnConv[i];
@@ -116,14 +116,13 @@ function setPath(resultJson: any, head: string, value: any, conv: Converter, hea
     if (conv.parseParam.flatKeys) {
       conv.parseRuntime.columnValueSetter[headIdx] = flatSetter;
     } else {
-
       if (head.indexOf(".") > -1) {
-        const headArr=head.split(".");
-        let jsonHead=true;
-        while(headArr.length>0){
-          const headCom=headArr.shift();
-          if (headCom!.length===0){
-            jsonHead=false;
+        const headArr = head.split(".");
+        let jsonHead = true;
+        while(headArr.length > 0){
+          const headCom = headArr.shift();
+          if (headCom!.length === 0){
+            jsonHead = false;
             break;
           }
         }
@@ -137,8 +136,8 @@ function setPath(resultJson: any, head: string, value: any, conv: Converter, hea
       }
     }
   }
-  if (conv.parseParam.nullObject ===true && value ==="null"){
-    value=null;
+  if (conv.parseParam.nullObject === true && value === "null"){
+    value = null;
   }
   conv.parseRuntime.columnValueSetter[headIdx](resultJson, head, value);
   // flatSetter(resultJson, head, value);

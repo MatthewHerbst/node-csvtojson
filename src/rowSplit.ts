@@ -1,10 +1,10 @@
-import { CSVParseParam } from "./Parameters";
 import { Converter } from "./Converter";
 import { Fileline } from "./fileline";
 import getEol from "./getEol";
 import { filterArray, trimLeft, trimRight } from "./util";
 
 const defaulDelimiters = [",", "|", "\t", ";", ":"];
+
 export class RowSplit {
   private quote: string;
   private trim: boolean;
@@ -29,7 +29,6 @@ export class RowSplit {
     }
     const quote = this.quote;
     const trim = this.trim;
-    const escape = this.escape;
     if (this.conv.parseRuntime.delimiter instanceof Array || this.conv.parseRuntime.delimiter.toLowerCase() === "auto") {
       this.conv.parseRuntime.delimiter = this.getDelimiter(fileline);
 
@@ -50,7 +49,6 @@ export class RowSplit {
     } else {
       return this.toCSVRow(rowArr, trim, quote, delimiter);
     }
-
   }
   private toCSVRow(rowArr: string[], trim: boolean, quote: string, delimiter: string): RowSplitResult {
     const row: string[] = [];
@@ -77,12 +75,12 @@ export class RowSplit {
             let count = 0;
             let prev = "";
             for (const c of e) {
-              // count quotes only if previous character is not escape char
+              // Count quotes only if previous character is not escape char
               if (c === quote && prev !== this.escape) {
                 count++;
                 prev = "";
               } else {
-                // save previous char to temp variable
+                // Save previous char to temp variable
                 prev = c;
               }
             }
@@ -95,7 +93,7 @@ export class RowSplit {
             }else{
               inquote = true;
               quoteBuff += e;
-              continue;  
+              continue;
             }
           }
           else {
@@ -110,8 +108,8 @@ export class RowSplit {
           row.push(e);
           continue;
         }
-      } else { //previous quote not closed
-        if (this.isQuoteClose(e)) { //close double quote
+      } else { // Previous quote not closed
+        if (this.isQuoteClose(e)) { // Close double quote
           inquote = false;
           e = e.substr(0, len - 1);
           quoteBuff += delimiter + e;
@@ -156,9 +154,11 @@ export class RowSplit {
   private isQuoteOpen(str: string): boolean {
     const quote = this.quote;
     const escape = this.escape;
-    return str[0] === quote && (
-      str[1] !== quote ||
-      str[1] === escape && (str[2] === quote || str.length === 2));
+    return str[0] === quote &&
+      (
+        str[1] !== quote ||
+        str[1] === escape && (str[2] === quote || str.length === 2)
+      );
   }
   private isQuoteClose(str: string): boolean {
     const quote = this.quote;
@@ -174,7 +174,6 @@ export class RowSplit {
     }
     return count % 2 !== 0;
   }
-
   // private twoDoubleQuote(str: string): string {
   //   var twoQuote = this.quote + this.quote;
   //   var curIndex = -1;
@@ -183,8 +182,6 @@ export class RowSplit {
   //   }
   //   return str;
   // }
-
-
   private escapeQuote(segment: string): string {
     const key = "es|" + this.quote + "|" + this.escape;
     if (this.cachedRegExp[key] === undefined) {

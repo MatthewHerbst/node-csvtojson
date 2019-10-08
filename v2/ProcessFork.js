@@ -33,7 +33,7 @@ var ProcessorFork = /** @class */ (function (_super) {
     }
     ProcessorFork.prototype.flush = function () {
         var _this = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             // console.log("flush");
             _this.finalChunk = true;
             _this.next = resolve;
@@ -136,7 +136,7 @@ var ProcessorFork = /** @class */ (function (_super) {
     };
     ProcessorFork.prototype.process = function (chunk) {
         var _this = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(function (resolve) {
             // console.log("chunk", chunk.length);
             _this.next = resolve;
             // this.appendReadBuf(chunk);

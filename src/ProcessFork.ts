@@ -1,16 +1,13 @@
 import { ChildProcess } from "child_process";
-import { Readable, Writable } from "stream";
 
 import { Converter } from "./Converter";
 import CSVError from "./CSVError";
 import { CSVParseParam, mergeParams } from "./Parameters";
-import { ParseRuntime } from "./ParseRuntime";
 import { Processor, ProcessLineResult } from "./Processor";
-import { bufFromString, emptyBuffer } from "./util";
 
 export class ProcessorFork extends Processor {
   flush(): Promise<ProcessLineResult[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       // console.log("flush");
       this.finalChunk = true;
       this.next = resolve;
@@ -38,19 +35,19 @@ export class ProcessorFork extends Processor {
     });
     this.initWorker();
   }
-  private prepareParam(param: CSVParseParam):any{
-    const clone:any=mergeParams(param);
+  private prepareParam(param: CSVParseParam): any {
+    const clone: any = mergeParams(param);
     if (clone.ignoreColumns){
-      clone.ignoreColumns={
+      clone.ignoreColumns = {
         source:clone.ignoreColumns.source,
         flags:clone.ignoreColumns.flags
-      }
+      };
     }
-    if (clone.includeColumns){
-      clone.includeColumns={
+    if (clone.includeColumns) {
+      clone.includeColumns = {
         source:clone.includeColumns.source,
         flags:clone.includeColumns.flags
-      }
+      };
     }
     return clone;
   }
@@ -69,15 +66,13 @@ export class ProcessorFork extends Processor {
         if (this.converter.listeners("eol").length > 0){
           this.converter.emit("eol", (msg as StringMessage).value);
         }
-      }else if (msg.cmd === "header") {
+      } else if (msg.cmd === "header") {
         if (this.converter.listeners("header").length > 0){
           this.converter.emit("header", (msg as StringMessage).value);
         }
-      }else if (msg.cmd === "done"){
-
+      } else if (msg.cmd === "done"){
         // this.flushResult();
       }
-
     });
     this.childProcess.stdout.on("data", (data) => {
       // console.log("stdout", data.toString());
@@ -125,7 +120,7 @@ export class ProcessorFork extends Processor {
   }
 
   process(chunk: Buffer): Promise<ProcessLineResult[]> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       // console.log("chunk", chunk.length);
       this.next = resolve;
       // this.appendReadBuf(chunk);
